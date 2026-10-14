@@ -1,0 +1,16 @@
+{
+    "workspaceName": "Agent",
+    "repos": [
+        {
+            "url": "https://github.com/StarCruiseStudios/Atlas.git"
+        },
+        {
+            "url": "https://github.com/StarCruiseStudios/SpecNRoll.git"
+        }
+    ],
+    "workspaceSettings": {
+        "settings": {
+            "workbench.colorTheme": "Vayeate"
+        }
+    }
+}
