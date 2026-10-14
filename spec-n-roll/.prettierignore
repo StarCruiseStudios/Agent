@@ -1,8 +1,0 @@
-dist/
-node_modules/
-coverage/
-src/*/architecture/
-V0/dist/
-V0/node_modules/
-V0/
-.tmp/

@@ -1,6 +1,0 @@
-<Solution>
-  <Folder Name="/src/">
-    <Project Path="src/app/App.csproj" />
-    <Project Path="src/lib/Lib.csproj" />
-  </Folder>
-</Solution>

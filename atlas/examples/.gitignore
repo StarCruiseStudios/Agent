@@ -1,8 +1,0 @@
-node_modules/
-architecture/
-.gradle/
-build/
-!csharp/build/
-!csharp/build/**
-**/bin/
-**/obj/

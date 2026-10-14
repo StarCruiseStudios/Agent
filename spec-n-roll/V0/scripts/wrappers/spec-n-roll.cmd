@@ -1,4 +1,0 @@
-@ECHO off
-SETLOCAL ENABLEEXTENSIONS
-SET DP0=%~dp0
-node "%DP0%\index.js" %*

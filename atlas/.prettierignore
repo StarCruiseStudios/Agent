@@ -1,9 +1,0 @@
-AGENTS.md
-node_modules/
-dist/
-coverage/
-src/**/.gradle/
-src/**/build/
-examples/**/.gradle/
-examples/**/build/
-package-lock.json

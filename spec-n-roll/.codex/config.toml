@@ -1,9 +1,0 @@
-default_permissions = "project-edit"
-
-[permissions.project-edit.filesystem]
-":minimal" = "read"
-
-[permissions.project-edit.filesystem.":workspace_roots"]
-"." = "write"
-"V0" = "deny"
-"V0/**" = "deny"
