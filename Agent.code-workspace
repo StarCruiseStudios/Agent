@@ -7,10 +7,11 @@
 			"path": "agentconfig"
 		},
 		{
-			"path": "spec-n-roll"
+			"path": "codex-commander"
 		}
 	],
 	"settings": {
-		"git.openRepositoryInParentFolders": "always"
+		"git.openRepositoryInParentFolders": "always",
+		"workbench.colorTheme": "Vayeate",
 	},
 }
