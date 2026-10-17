@@ -2,7 +2,16 @@
     "workspaceName": "Agent",
     "repos": [
         {
+            "url": "https://github.com/StarCruiseStudios/Armory.git"
+        },
+        {
             "url": "https://github.com/StarCruiseStudios/Atlas.git"
+        },
+        {
+            "url": "https://github.com/StarCruiseStudios/Oracle.git"
+        },
+        {
+            "url": "https://github.com/StarCruiseStudios/Overmind.git"
         },
         {
             "url": "https://github.com/StarCruiseStudios/SpecNRoll.git"
