@@ -33,6 +33,19 @@ export async function pack(root: string, name = 'reviewer') {
   return directory;
 }
 
+export async function skill(agentPath: string, name = 'sample', body = 'Skill instructions.') {
+  const directory = path.join(agentPath, 'skills', name);
+  await fs.mkdir(directory, { recursive: true });
+  await fs.writeFile(path.join(directory, 'SKILL.md'), `---\nname: ${name}\ndescription: A skill.\n---\n${body}`);
+  return directory;
+}
+
+export async function references(root: string, directories: string[]) {
+  const directory = path.join(root, '.compass');
+  await fs.mkdir(directory, { recursive: true });
+  await fs.writeFile(path.join(directory, 'config.json'), JSON.stringify({ directories }));
+}
+
 export function override(base: FileSystem, changes: Partial<FileSystem>): FileSystem {
   return {
     realpath: changes.realpath ?? base.realpath.bind(base),

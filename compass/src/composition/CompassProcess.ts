@@ -8,6 +8,7 @@ import { AgentCatalog } from '../catalog/AgentCatalog.ts';
 import { ToolResultFactory } from '../tools/ToolResultFactory.ts';
 import { ListAgentsTool } from '../tools/ListAgentsTool.ts';
 import { FetchAgentInstructionsTool } from '../tools/FetchAgentInstructionsTool.ts';
+import { FetchSkillInstructionsTool } from '../tools/FetchSkillInstructionsTool.ts';
 import { CompassMcpServer } from '../server/CompassMcpServer.ts';
 
 /**
@@ -20,7 +21,8 @@ export class CompassProcess {
     const catalog = new AgentCatalog(fs, new ProjectRootResolver(fs), new CompassPathGuard(fs),
       new AgentPackParser(fs), logger);
     const results = new ToolResultFactory(logger);
-    const server = new CompassMcpServer(new ListAgentsTool(catalog, results), new FetchAgentInstructionsTool(catalog, results));
+    const server = new CompassMcpServer(new ListAgentsTool(catalog, results), new FetchAgentInstructionsTool(catalog, results),
+      new FetchSkillInstructionsTool(catalog, results));
     return serveStdio(() => server.build());
   }
 }

@@ -7,13 +7,13 @@ import { fileURLToPath } from 'node:url';
 import { once } from 'node:events';
 import { readFile, symlink } from 'node:fs/promises';
 import * as path from 'node:path';
-import { temporary } from '../helpers.ts';
+import { temporary, references } from '../helpers.ts';
 
 const execute = promisify(execFile);
 const packageRoot = fileURLToPath(new URL('../../', import.meta.url));
 
 for (const linked of [false, true]) {
-test(`${linked ? 'linked CLI' : 'compiled entry'} serves only two tools, keeps stdout pure and survives tool errors`, { timeout: 30000 }, async t => {
+test(`${linked ? 'linked CLI' : 'compiled entry'} serves three tools, keeps stdout pure and survives tool errors`, { timeout: 30000 }, async t => {
   await execute(process.execPath, ['node_modules/typescript/bin/tsc', '-p', 'tsconfig.json'], { cwd: packageRoot });
   const imported = await execute(process.execPath, ['--input-type=module', '-e', "await import('./dist/main.js')"],
     { cwd: packageRoot, timeout: 5000 });
@@ -72,12 +72,14 @@ test(`${linked ? 'linked CLI' : 'compiled entry'} serves only two tools, keeps s
   assert.equal(init.result.capabilities.prompts, undefined);
   child.stdin.write(JSON.stringify({ jsonrpc: '2.0', method: 'notifications/initialized' }) + '\n');
   const discovered = await request('tools/list');
-  assert.deepEqual(discovered.result.tools.map((tool: any) => tool.name).sort(), ['fetch_agent_instructions', 'list_agents']);
+  assert.deepEqual(discovered.result.tools.map((tool: any) => tool.name).sort(), ['fetch_agent_instructions', 'fetch_skill_instructions', 'list_agents']);
   for (const tool of discovered.result.tools) {
     assert.deepEqual(tool.annotations, { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false });
     assert.equal(tool.inputSchema.additionalProperties, false);
   }
-  const root = fileURLToPath(new URL('../fixtures/project', import.meta.url));
+  const fixtureRoot = fileURLToPath(new URL('../fixtures/project', import.meta.url));
+  const root = await temporary(t);
+  await references(root, [path.join(fixtureRoot, '.compass')]);
   const call = async (name: string, args: object) => {
     const response = await request('tools/call', { name, arguments: args });
     assert.equal(response.error, undefined);
@@ -91,10 +93,19 @@ test(`${linked ? 'linked CLI' : 'compiled entry'} serves only two tools, keeps s
   const missingFetchRoot = await call('fetch_agent_instructions', { name: 'orchestrator' });
   assert.equal(missingFetchRoot.structuredContent.error, 'invalid_project_root');
   const list = await call('list_agents', { projectRoot: root });
+  assert.equal('skills' in list.structuredContent.agents[0], false);
   const fetched = await call('fetch_agent_instructions', { projectRoot: root, name: list.structuredContent.agents[0].name });
   assert.equal(fetched.structuredContent.modelHint, 'grok');
   assert.ok(fetched.structuredContent.agentPath);
   assert.match(fetched.structuredContent.instructions, /Dispatch independent/);
+  assert.deepEqual(fetched.structuredContent.skills, [{ name: 'dispatch', description: 'Dispatch independent tasks.' }]);
+  assert.deepEqual(fetched.structuredContent.skillProblems, []);
+  const skill = await call('fetch_skill_instructions', { projectRoot: root, agentName: 'orchestrator', skillName: 'dispatch' });
+  assert.match(skill.structuredContent.instructions, /Assign independent tasks/);
+  assert.equal(skill.structuredContent.compassPath, fetched.structuredContent.compassPath);
+  const badSkill = await call('fetch_skill_instructions', { projectRoot: root, agentName: 'orchestrator', skillName: 'unknown' });
+  assert.equal(badSkill.isError, true);
+  assert.equal(badSkill.structuredContent.error, 'unknown_skill');
   const invalid = await call('fetch_agent_instructions', { projectRoot: root, name: '../escape' });
   assert.equal(invalid.isError, true);
   assert.equal(invalid.structuredContent.error, 'invalid_name');
@@ -109,5 +120,6 @@ test(`${linked ? 'linked CLI' : 'compiled entry'} serves only two tools, keeps s
   assert.match(stderr, /Fetching pack/);
   assert.match(stderr, /invalid_project_root/);
   assert.equal(stderr.includes('Dispatch independent work and report the results.'), false);
+  assert.equal(stderr.includes('Assign independent tasks'), false);
 });
 }

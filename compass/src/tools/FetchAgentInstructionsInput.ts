@@ -11,5 +11,5 @@ export const FetchAgentInstructionsInput = z.strictObject({
   /**
    * Explicit absolute root; omission returns invalid_project_root.
    */
-  projectRoot: z.string().optional().describe('Absolute root of the project being worked on; reads only <projectRoot>/.compass. Required for success; no cwd default or parent search.'),
+  projectRoot: z.string().optional().describe('Absolute project root; reads its .compass catalog and recursively configured directories. Required for success; no cwd default or parent search.'),
 });

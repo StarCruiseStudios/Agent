@@ -93,7 +93,7 @@ const invalidMetadata: unknown[] = [
   { ...metadata(), whenToUse: 'x'.repeat(501) },
   { ...metadata(), modelHint: null },
   { ...metadata(), modelHint: '' },
-  { ...metadata(), modelHint: 'x'.repeat(65) },
+  { ...metadata(), modelHint: 'x'.repeat(501) },
   { ...metadata(), tools: ['same', 'same'] },
   { ...metadata(), tools: [''] },
   { ...metadata(), tools: ['x'.repeat(65)] },
@@ -107,7 +107,7 @@ test('metadata schema is strict and enforces all field constraints', () => {
   const { modelHint: _omitted, ...withoutModel } = metadata();
   assert.equal(AgentMetadata.safeParse(withoutModel).success, false);
   const valid = { name: 'a'.repeat(64), description: 'd'.repeat(500), whenToUse: 'w'.repeat(500),
-    modelHint: 'm'.repeat(64), tools: Array.from({ length: 32 }, (_, i) => String(i).padStart(64, 't')) };
+    modelHint: 'm'.repeat(500), tools: Array.from({ length: 32 }, (_, i) => String(i).padStart(64, 't')) };
   assert.equal(AgentMetadata.safeParse(valid).success, true);
   assert.deepEqual(AgentMetadata.parse(metadata()).tools, []);
 });

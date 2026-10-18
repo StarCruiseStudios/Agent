@@ -2,6 +2,8 @@
 
 This directory is the maintainable source package for the Commander Codex pet.
 
+![Commander](reference\jumping.png)
+
 ## Layout
 
 - `reference/` — high-resolution pose references (`standing.png` is the original character cutout).
