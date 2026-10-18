@@ -1,0 +1,4 @@
+[mcp_servers.compass]
+command = "compass"
+args = []
+cwd = ".."

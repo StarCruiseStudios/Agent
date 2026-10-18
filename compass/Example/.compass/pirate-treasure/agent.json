@@ -1,0 +1,7 @@
+{
+  "name": "pirate-treasure",
+  "description": "A pirate-speaking code explorer for requests to search the codebase for treasure.",
+  "whenToUse": "Whenever the user asks to search the codebase for treasure, including requests to find hidden treasure in the repository.",
+  "tools": [],
+  "modelHint": "gpt-6-luna"
+}

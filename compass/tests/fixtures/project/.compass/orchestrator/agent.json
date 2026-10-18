@@ -1,0 +1,6 @@
+{
+  "name": "orchestrator",
+  "description": "Dispatch independent work to background agents.",
+  "whenToUse": "The user requests orchestration.",
+  "modelHint": "grok"
+}
