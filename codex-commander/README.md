@@ -2,7 +2,7 @@
 
 This directory is the maintainable source package for the Commander Codex pet.
 
-![Commander](reference\jumping.png)
+![Commander](./reference/jumping.png)
 
 ## Layout
 
