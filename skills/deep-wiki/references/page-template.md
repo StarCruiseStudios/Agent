@@ -1,15 +1,44 @@
 # Page template
 
-Use this skeleton and drop any section that does not apply. Headings are fixed so pages stay consistent across a wiki.
+Each page is an OKF v0.2 concept: YAML frontmatter followed by a markdown body. Use this skeleton and drop any section that does not apply. Headings are fixed so pages stay consistent across a wiki.
+
+## Frontmatter
+
+`type` is the only required key. Set the others whenever you can.
+
+```yaml
+---
+type: Class                  # the symbol kind: Class | Interface | Struct | Enum | Type | Method | Function | Constructor | Variable | Field | Constant | Property | File | Namespace | Module | Package | Directory
+title: RetryPolicy           # the symbol name, qualified if that disambiguates
+description: Decides how many times and how long to wait before a failed call is retried.   # one self-contained sentence; repeated in index.md
+resource: https://github.com/acme/billing-api/blob/main/src/retry/RetryPolicy.cs   # web URL of the definition; repo-relative path if no web URL is known
+tags: [retry, resilience]
+status: draft                # draft | stable | deprecated
+generated: { by: deep-wiki/claude-sonnet-5-5, at: 2026-10-22T14:00:00Z }
+sources:                     # index of the main sources; inline links in the body remain the per-claim attribution
+  - id: retry-policy
+    resource: https://github.com/acme/billing-api/blob/main/src/retry/RetryPolicy.cs
+    title: RetryPolicy.cs
+# Extensions
+defined_in: src/retry/RetryPolicy.cs:12
+part_of: Billing.Retry
+language: csharp
+sources_commit: 502b3be
+---
+```
+
+Rules:
+
+- `generated.by` is `deep-wiki/<model id>`; `generated.at` is an ISO 8601 time with an explicit offset and is the last meaningful content change. Omit `verified` unless a person confirmed the page, and then use `human:<id>` as the actor.
+- `description` must stand alone as a snippet and must match the page's `index.md` entry.
+- Keep unknown extension keys. Never drop keys another tool added.
+
+## Body
 
 ````markdown
 # <Symbol name>
 
-> **Kind:** <class | interface | method | variable | file | namespace | ...>
-> **Defined in:** [path/to/file.ext:LINE](relative/link#LINELINE)
-> **Part of:** <enclosing type, module, or package>
-
-<One paragraph: what it is, what problem it solves, and where it sits in the system.>
+<One paragraph: what it is, what problem it solves, and where it sits in the system. Name the kind, the defining file as a link with a line anchor, and the enclosing type, module, or package.>
 
 ## Definition
 
@@ -61,18 +90,13 @@ Use this skeleton and drop any section that does not apply. Headings are fixed s
 
 ## Related
 
-- [Other symbol](other-symbol.md): how it relates
+- [Other symbol](/docs/wiki/other-symbol.md): how it relates
 - Tests: [path:LINE](link)
 
 ## Open questions
 
 <Anything you could not confirm.>
 
-## Sources
-
-- [path:LINE](link): what is there
-
-_Reflects commit `<short sha>` on <YYYY-MM-DD>._
 ````
 
 ## Emphasis by kind

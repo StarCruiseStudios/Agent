@@ -1,6 +1,6 @@
 ---
 name: deep-wiki
-description: Generate an in-depth markdown wiki page for any code symbol (variable, field, function, method, class, interface, type, file, namespace, module, package). Use when the user asks to explain, document, deep-dive, trace, or "wiki" a symbol, file, or area of code and wants a durable, detailed write-up with sources, rather than a quick chat answer.
+description: Generate an in-depth markdown wiki page, written as an Open Knowledge Format (OKF) concept, for any code symbol (variable, field, function, method, class, interface, type, file, namespace, module, package). Use when the user asks to explain, document, deep-dive, trace, or "wiki" a symbol, file, or area of code and wants a durable, detailed write-up with sources, rather than a quick chat answer.
 compatibility: Works with any agent that can read files and search code. Uses LSP or IDE symbol tools and git when available, and falls back to plain text search.
 metadata:
   version: "1.0"
@@ -8,7 +8,7 @@ metadata:
 
 # Deep Wiki
 
-Turn a code symbol into a detailed, accurate wiki page in the style of Devin/Windsurf DeepWiki. The target can be a variable, method, class, interface, type, file, namespace, module, or package. Produce the page itself as a markdown file, not advice about how to document it.
+Turn a code symbol into a detailed, accurate wiki page in the style of Devin/Windsurf DeepWiki. The target can be a variable, method, class, interface, type, file, namespace, module, or package. Produce the page itself as a markdown file, not advice about how to document it. Pages follow the [Open Knowledge Format (OKF) v0.2](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md): YAML frontmatter with a required `type`, a markdown body, `/`-rooted links between wiki pages, and `index.md` and `log.md` for the folder. The bundle root is the repository root.
 
 Every statement on the page must come from code you actually read. If you have not opened it, do not describe it.
 
@@ -39,8 +39,8 @@ When the target is large (a big file, a namespace), survey first, then read the 
 
 Follow [references/page-template.md](references/page-template.md) for the section skeleton and the per-kind emphasis. In short, the page has:
 
-1. Title, kind, and a one-paragraph summary of what it is and why it exists
-2. Location and definition (file link, signature or declaration)
+1. OKF frontmatter (type, title, description, location, provenance), then the title and a one-paragraph summary of what it is and why it exists
+2. Definition (signature or declaration; the file link is in the frontmatter and the summary)
 3. Purpose and responsibilities
 4. How it works: a step-by-step walkthrough of the logic with short, relevant snippets
 5. Contract: inputs, outputs, types, defaults, invariants, errors
@@ -49,7 +49,7 @@ Follow [references/page-template.md](references/page-template.md) for the sectio
 8. Usage examples taken from real call sites or tests
 9. Edge cases, gotchas, and design rationale
 10. Related symbols and tests
-11. Sources
+11. Open questions (sources are indexed in the frontmatter `sources` field)
 
 Rules for the writing:
 
@@ -57,14 +57,15 @@ Rules for the writing:
 - **Scale to the target.** A small constant gets a short page; a namespace gets a long one. Omit sections that do not apply instead of padding them.
 - **Be concrete.** Name the real files, types, and functions. Quote short snippets (about 15 lines at most) with a language tag.
 - **Separate fact from inference.** Anything not directly supported by the code gets labelled, for example "Inferred from the call sites in ...". Record open questions at the end instead of guessing.
-- **Link to sources.** Use relative markdown links with line anchors, such as `[auth.ts:42](../../src/server/auth.ts#L42)`. Compute relative paths from the output file's location.
+- **Link to sources.** Use relative markdown links with line anchors, such as `[auth.ts:42](../../src/server/auth.ts#L42)`, for code in the same repo, computing relative paths from the output file's location. Use the source-control web URL for code in another repo. Link to other wiki pages with bundle-relative paths rooted at the repository root, such as `/docs/wiki/billing-invoices-total.md`.
 - **Diagrams must be valid.** Use Mermaid (`classDiagram`, `flowchart`, `sequenceDiagram`) only when it adds clarity, and keep nodes to real symbols.
 - **Neutral, direct prose.** Plain sentences, present tense, no marketing language.
 
 ## 4. Save and report
 
-- Write the page to `docs/wiki/<slug>.md`, where the slug is the lowercase, hyphenated qualified name (`billing-invoices-total.md`, `src-server-auth-ts.md`). Use another path if the user gives one. Create the directory if needed. If the file exists, update it in place instead of creating a duplicate.
-- End the page with a line stating the commit (`git rev-parse --short HEAD`) and date it reflects, so readers can judge staleness.
+- Write the page to `docs/wiki/<slug>.md`, where the slug is the lowercase, hyphenated qualified name (`billing-invoices-total.md`, `src-server-auth-ts.md`). The OKF bundle root is the repository root. If the repo already has an architecture-wiki (a wiki whose repository-root `index.md` declares `okf_version`), write to its `symbols/` folder instead. Use another path if the user gives one. Create the directory if needed. If the file exists, update it in place instead of creating a duplicate.
+- Keep the bundle navigable. Add the page to the `index.md` in its folder with its frontmatter `description` (`* [Title](/docs/wiki/slug.md) - description`, with links rooted at the repository root). If the folder has no `index.md`, create one with no frontmatter. If the repository root has no `index.md`, create one whose frontmatter holds only `okf_version: "0.2"` and which links the wiki's `index.md`. Add an entry to `log.md` in the same folder, at the top of today's `## YYYY-MM-DD` section: `* **Creation**: Documented [Title](/docs/wiki/slug.md).` or `* **Update**: ...`. Create `log.md` if missing. Never edit earlier log entries.
+- Record the commit (`git rev-parse --short HEAD`) in `sources_commit` and the time of this content in `generated.at`, so readers can judge staleness. Do not add a trailing commit line to the body.
 - In your reply give the file path, a two or three sentence summary of what you found, and any assumptions or unresolved questions. Do not paste the whole page into chat.
 - If the user asked about several symbols, write one page per symbol and link them to each other where they relate.
 
@@ -72,8 +73,9 @@ Rules for the writing:
 
 Check the page against this list and fix problems before you reply:
 
-- Every claim traces to code you read, and each Sources entry points to a real line.
-- All links resolve from the page's location.
+- Every claim traces to code you read, and each `sources` entry and inline citation points to a real line.
+- The frontmatter parses, has a non-empty `type`, and has a `title` and a one-sentence `description` that matches the `index.md` entry. No `verified` field is present unless a person confirmed the page.
+- All links resolve: relative code links from the page's location, wiki links from the repository root.
 - Signatures, names, and defaults match the code exactly.
 - The summary alone tells a newcomer what the symbol is for.
 - Inferences are labelled, and nothing speculative is stated as fact.
