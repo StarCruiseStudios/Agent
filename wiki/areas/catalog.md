@@ -28,4 +28,4 @@ sources_commit: 502b3be
 | Overmind | agent-workspace | Coordinates tasks, approvals, and robots for local AI agents | `StarCruiseStudios/Overmind` | overview (1 page, 2 backlog items) | [overmind](/wiki/areas/agent-workspace/systems/overmind/overview.md) |
 | Spec N' Roll | agent-workspace | Spec-driven development workflows for AI agents | `StarCruiseStudios/SpecNRoll` | overview (1 page, 1 backlog item) | [spec-n-roll](/wiki/areas/agent-workspace/systems/spec-n-roll/overview.md) |
 | Atlas | engineering-toolkits | Validates and visualizes project architecture | `StarCruiseStudios/Atlas` | overview (1 page, 2 backlog items) | [atlas](/wiki/areas/engineering-toolkits/systems/atlas/overview.md) |
-| Oracle | engineering-toolkits | User interface toolkits and style guide | `StarCruiseStudios/Oracle` | overview (1 page, 2 backlog items) | [oracle](/wiki/areas/engineering-toolkits/systems/oracle/overview.md) |
+| Oracle | engineering-toolkits | User interface toolkits and style guide | `StarCruiseStudios/Oracle` | standard (4 pages, 6 backlog items) | [oracle](/wiki/areas/engineering-toolkits/systems/oracle/overview.md) |

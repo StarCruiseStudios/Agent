@@ -1,5 +1,8 @@
 # Wiki Log
 
+## 2026-10-23
+* **Creation**: Documented the [Oracle system](/wiki/areas/engineering-toolkits/systems/oracle/overview.md) at standard depth. Added the [TypeScript toolkit](/wiki/areas/engineering-toolkits/systems/oracle/containers/typescript-toolkit/overview.md), [Kotlin toolkit](/wiki/areas/engineering-toolkits/systems/oracle/containers/kotlin-toolkit/overview.md), and [style guide](/wiki/areas/engineering-toolkits/systems/oracle/containers/style-guide/overview.md) containers. Replaced two Oracle backlog items with six narrower ones.
+
 ## 2026-10-22
 * **Update**: Set the bundle root to the repository root. Added a root `index.md` that declares the Open Knowledge Format version and removed the declaration from the wiki listing.
 * **Update**: Converted the wiki to the Open Knowledge Format. Added frontmatter to every page, split each scope into an `overview.md` page and an `index.md` listing, replaced the changelog with this log, and moved the systems catalog to [catalog](/wiki/areas/catalog.md).
