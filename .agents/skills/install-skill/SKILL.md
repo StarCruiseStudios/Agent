@@ -2,6 +2,7 @@
 name: install-skill
 description: Install a named skill from this repository's skills directory, along with any skills it depends on, into a target project or folder using the layout of a chosen agent framework (claude, cursor, codex, copilot, gemini, opencode) or the agentskills.io convention by default. Use when the user asks to install, copy, deploy, or add a skill from this repo to another project or agent.
 compatibility: Works with any agent that can read, list, and copy files.
+disable-model-invocation: true
 metadata:
   version: "1.1"
 ---
