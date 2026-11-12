@@ -32,6 +32,5 @@ npm-debug.log*
 !.env.example
 
 # >>> armory (managed)
-armory.ts
 *.armory.code-workspace
 # <<< armory (managed)

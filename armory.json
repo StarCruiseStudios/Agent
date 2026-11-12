@@ -15,6 +15,9 @@
         },
         {
             "url": "https://github.com/StarCruiseStudios/SpecNRoll.git"
+        },
+        {
+            "url": "https://github.com/StarCruiseStudios/Pylon.git"
         }
     ],
     "workspaceSettings": {
