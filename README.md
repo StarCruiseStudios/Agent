@@ -22,6 +22,7 @@ A collection of tools, skills, and instructions for working with AI coding agent
 | `plan-tracker` | Run a staged planning workflow with a subagent per stage and a resumable progress file. |
 | `track-progress` | Keep the progress file current while implementing a plan, and resume after interruptions. |
 | `voice-guide` | Create or revise a reusable voice and tone guide. |
+| `writing-doc-comments` | Write documentation comments that state purpose, contract, and constraints. |
 
 Use the `install-skill` skill to install one of these into another project, and `install-instructions` to install an instruction set.
 
