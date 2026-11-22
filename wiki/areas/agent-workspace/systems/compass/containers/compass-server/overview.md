@@ -58,7 +58,7 @@ Diagram sources:
 | Entry and composition | Starts the process and connects every object | [CompassProcess.ts](https://github.com/StarCruiseStudios/Agent/blob/main/compass/src/composition/CompassProcess.ts) |
 | MCP server | Registers the tools with read-only annotations | [CompassMcpServer.ts](https://github.com/StarCruiseStudios/Agent/blob/main/compass/src/server/CompassMcpServer.ts) |
 | Tools | Validate input and convert every failure into a tool result | [ToolResultFactory.ts](https://github.com/StarCruiseStudios/Agent/blob/main/compass/src/tools/ToolResultFactory.ts) |
-| Catalog | Finds catalog directories, validates names and paths, and parses packs and skills | [AgentCatalog.ts](https://github.com/StarCruiseStudios/Agent/blob/main/compass/src/catalog/AgentCatalog.ts) |
+| [Catalog](/wiki/areas/agent-workspace/systems/compass/containers/compass-server/components/catalog.md) | Finds catalog directories, validates names and paths, and parses packs and skills | [AgentCatalog.ts](https://github.com/StarCruiseStudios/Agent/blob/main/compass/src/catalog/AgentCatalog.ts) |
 | Filesystem | A small read-only interface and its Node adapter | [FileSystem.ts](https://github.com/StarCruiseStudios/Agent/blob/main/compass/src/filesystem/FileSystem.ts) |
 | Logging | Writes diagnostics to stderr so stdout stays a pure MCP stream | [TslogDiagnosticLogger.ts](https://github.com/StarCruiseStudios/Agent/blob/main/compass/src/logging/TslogDiagnosticLogger.ts) |
 
@@ -89,6 +89,7 @@ The package builds with the TypeScript compiler and runs as a command that an MC
 
 ## Pages in this container
 
+- Components: [Catalog](/wiki/areas/agent-workspace/systems/compass/containers/compass-server/components/catalog.md)
 - Flows: [Pack discovery and fetch](/wiki/areas/agent-workspace/systems/compass/containers/compass-server/flows/pack-discovery-and-fetch.md)
 
 ## Wider scope

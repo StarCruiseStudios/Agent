@@ -1,5 +1,12 @@
 # Wiki Log
 
+## 2026-11-21
+* **Creation**: Documented the [task and run lifecycle](/wiki/areas/agent-workspace/systems/overmind/containers/overmind-svc/flows/task-lifecycle.md) of the Overmind service, tracing admission, scheduling, approval, and recovery in code. Linked it from the [Overmind](/wiki/areas/agent-workspace/systems/overmind/overview.md) system, resolved its backlog item, and added four narrower ones.
+* **Creation**: Documented the [Catalog component](/wiki/areas/agent-workspace/systems/compass/containers/compass-server/components/catalog.md) of the Compass server, covering first-definition-wins, case-collision handling, and error mapping. Linked it from the [Compass Server](/wiki/areas/agent-workspace/systems/compass/containers/compass-server/overview.md) container and removed its backlog item.
+* **Creation**: Added the [motion expressions](/wiki/areas/agent-workspace/systems/codex-commander/concepts/motion-expressions.md) concept for Codex Commander. Resolved its backlog item and added one for `combine.json` configuration and validation.
+* **Update**: Documented the `V0/` folder in [Spec N' Roll](/wiki/areas/agent-workspace/systems/spec-n-roll/overview.md) as a separate, fuller earlier implementation next to the stub runtime in `src/`, and narrowed the open questions. Removed the matching backlog item.
+* **Update**: Documented how skills reach a host in the [Skills Library](/wiki/areas/agent-workspace/systems/skills-library/overview.md): copy by `install-skill`, not through Compass. Replaced the backlog question with a narrower one about Compass packs.
+
 ## 2026-10-23
 * **Creation**: Documented the [Oracle system](/wiki/areas/engineering-toolkits/systems/oracle/overview.md) at standard depth. Added the [TypeScript toolkit](/wiki/areas/engineering-toolkits/systems/oracle/containers/typescript-toolkit/overview.md), [Kotlin toolkit](/wiki/areas/engineering-toolkits/systems/oracle/containers/kotlin-toolkit/overview.md), and [style guide](/wiki/areas/engineering-toolkits/systems/oracle/containers/style-guide/overview.md) containers. Replaced two Oracle backlog items with six narrower ones.
 
