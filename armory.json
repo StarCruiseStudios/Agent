@@ -18,6 +18,12 @@
         },
         {
             "url": "https://github.com/StarCruiseStudios/Pylon.git"
+        },
+        {
+            "url": "https://github.com/StarCruiseStudios/Khaos.git"
+        },
+        {
+            "url": "https://github.com/StarCruiseStudios/KhaosTest.git"
         }
     ],
     "workspaceSettings": {
