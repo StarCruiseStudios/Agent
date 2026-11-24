@@ -22,10 +22,10 @@ sources_commit: 502b3be
 | System | Area | Purpose | Repos | Coverage | Link |
 | --- | --- | --- | --- | --- | --- |
 | Compass | agent-workspace | Serves agent instruction packs and skills over MCP | `StarCruiseStudios/Agent` (`compass/`) | overview (3 pages, 4 backlog items) | [compass](/wiki/areas/agent-workspace/systems/compass/overview.md) |
-| Codex Commander | agent-workspace | Builds and installs the Commander Codex pet | `StarCruiseStudios/Agent` (`codex-commander/`) | overview (2 pages, 3 backlog items) | [codex-commander](/wiki/areas/agent-workspace/systems/codex-commander/overview.md) |
-| Skills Library | agent-workspace | Reusable agent skills | `StarCruiseStudios/Agent` (`skills/`) | overview (1 page, 2 backlog items) | [skills-library](/wiki/areas/agent-workspace/systems/skills-library/overview.md) |
+| Codex Commander | agent-workspace | Builds and installs the Commander Codex pet | `StarCruiseStudios/Agent` (`codex-commander/`) | overview (3 pages, 3 backlog items) | [codex-commander](/wiki/areas/agent-workspace/systems/codex-commander/overview.md) |
+| Skills Library | agent-workspace | Reusable agent skills | `StarCruiseStudios/Agent` (`skills/`) | overview (2 pages, 5 backlog items) | [skills-library](/wiki/areas/agent-workspace/systems/skills-library/overview.md) |
 | Armory | agent-workspace | Manages dependency repositories and generates a multi-root workspace | `StarCruiseStudios/Armory` | overview (1 page, 1 backlog item) | [armory](/wiki/areas/agent-workspace/systems/armory/overview.md) |
-| Overmind | agent-workspace | Coordinates tasks, approvals, and robots for local AI agents | `StarCruiseStudios/Overmind` | overview (1 page, 2 backlog items) | [overmind](/wiki/areas/agent-workspace/systems/overmind/overview.md) |
+| Overmind | agent-workspace | Coordinates tasks, approvals, and robots for local AI agents | `StarCruiseStudios/Overmind` | overview (2 pages, 5 backlog items) | [overmind](/wiki/areas/agent-workspace/systems/overmind/overview.md) |
 | Spec N' Roll | agent-workspace | Spec-driven development workflows for AI agents | `StarCruiseStudios/SpecNRoll` | overview (1 page, 1 backlog item) | [spec-n-roll](/wiki/areas/agent-workspace/systems/spec-n-roll/overview.md) |
-| Atlas | engineering-toolkits | Validates and visualizes project architecture | `StarCruiseStudios/Atlas` | overview (1 page, 2 backlog items) | [atlas](/wiki/areas/engineering-toolkits/systems/atlas/overview.md) |
+| Atlas | engineering-toolkits | Validates and visualizes project architecture | `StarCruiseStudios/Atlas` | overview (2 pages, 5 backlog items) | [atlas](/wiki/areas/engineering-toolkits/systems/atlas/overview.md) |
 | Oracle | engineering-toolkits | User interface toolkits and style guide | `StarCruiseStudios/Oracle` | standard (4 pages, 6 backlog items) | [oracle](/wiki/areas/engineering-toolkits/systems/oracle/overview.md) |

@@ -73,7 +73,7 @@ Diagram sources:
 
 ## Key flows
 
-Task admission, scheduling, approval, and recovery all run inside the local service, and the [service operations guide](https://github.com/StarCruiseStudios/Overmind/blob/main/apps/overmind-svc/OPERATIONS.md) defines the supported operations. No wiki page covers them yet.
+Task admission, scheduling, approval, and recovery all run inside the local service, and the [service operations guide](https://github.com/StarCruiseStudios/Overmind/blob/main/apps/overmind-svc/OPERATIONS.md) defines the supported operations. The [task and run lifecycle](/wiki/areas/agent-workspace/systems/overmind/containers/overmind-svc/flows/task-lifecycle.md) page traces them through the service code.
 
 ## Key entities
 
@@ -98,7 +98,9 @@ The project uses [Armory](/wiki/areas/agent-workspace/systems/armory/overview.md
 
 ## Pages in this system
 
-No pages exist below this overview yet. The [exploration backlog](/wiki/exploration-backlog.md) lists the planned ones.
+- [Task and run lifecycle](/wiki/areas/agent-workspace/systems/overmind/containers/overmind-svc/flows/task-lifecycle.md): admission, scheduling, approval, and recovery in the local service.
+
+The [exploration backlog](/wiki/exploration-backlog.md) lists the planned pages.
 
 ## Wider scope
 

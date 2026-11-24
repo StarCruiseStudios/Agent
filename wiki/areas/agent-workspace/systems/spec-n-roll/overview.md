@@ -4,7 +4,7 @@ title: "Spec N' Roll"
 description: "Spec N' Roll is a toolkit for spec-driven development with AI agents."
 resource: https://github.com/StarCruiseStudios/SpecNRoll/tree/main/src
 status: draft
-generated: { by: architecture-wiki/claude, at: 2026-10-22T00:00:00Z }
+generated: { by: architecture-wiki/claude, at: 2026-11-21T00:00:00Z }
 sources:
   - resource: https://github.com/StarCruiseStudios/SpecNRoll/blob/main/README.md
     title: README.md
@@ -12,12 +12,16 @@ sources:
     title: src/README.md
   - resource: https://github.com/StarCruiseStudios/SpecNRoll/blob/main/package.json
     title: package.json
+  - resource: https://github.com/StarCruiseStudios/SpecNRoll/blob/main/V0/package.json
+    title: V0/package.json
+  - resource: https://github.com/StarCruiseStudios/SpecNRoll/blob/main/V0/docs/README.md
+    title: V0/docs/README.md
 scope: system:spec-n-roll
 locations:
   - repo: StarCruiseStudios/SpecNRoll
     paths: [src/, architecture/, atlas.config.json, V0/]
 depth: overview
-sources_commit: 0f32626
+sources_commit: bd5a5fe
 ---
 
 # Spec N' Roll
@@ -30,11 +34,21 @@ Spec N' Roll is a toolkit for spec-driven development with AI agents. Teams and 
 | --- | --- | --- | --- |
 | `StarCruiseStudios/SpecNRoll` | [src/](https://github.com/StarCruiseStudios/SpecNRoll/tree/main/src) | The npm workspace packages | [src/README.md](https://github.com/StarCruiseStudios/SpecNRoll/blob/main/src/README.md) |
 | `StarCruiseStudios/SpecNRoll` | [architecture/](https://github.com/StarCruiseStudios/SpecNRoll/tree/main/architecture), [atlas.config.json](https://github.com/StarCruiseStudios/SpecNRoll/blob/main/atlas.config.json) | Generated architecture artifacts and the configuration that drives them | [atlas.config.json](https://github.com/StarCruiseStudios/SpecNRoll/blob/main/atlas.config.json) |
-| `StarCruiseStudios/SpecNRoll` | [V0/](https://github.com/StarCruiseStudios/SpecNRoll/tree/main/V0) | A separate project folder with its own package, documentation, and specifications | [V0/package.json](https://github.com/StarCruiseStudios/SpecNRoll/blob/main/V0/package.json) |
+| `StarCruiseStudios/SpecNRoll` | [V0/](https://github.com/StarCruiseStudios/SpecNRoll/tree/main/V0) | A self-contained earlier implementation: its own package, source, tests, specifications, and toolkit documentation (see [V0 folder](#v0-folder)) | [V0/package.json](https://github.com/StarCruiseStudios/SpecNRoll/blob/main/V0/package.json), [V0/docs/README.md](https://github.com/StarCruiseStudios/SpecNRoll/blob/main/V0/docs/README.md) |
 
 ## Responsibilities and boundary
 
 The packages split the work by role. A dispatcher resolves the project root and chooses a runtime, a runtime performs command behavior, an API package holds the contracts between them, an SDK holds behavior that several executables share, an MCP package adapts that behavior for agents, and a test package holds shared test support ([README](https://github.com/StarCruiseStudios/SpecNRoll/blob/main/README.md), [src/README.md](https://github.com/StarCruiseStudios/SpecNRoll/blob/main/src/README.md)).
+
+## V0 folder
+
+`V0/` is a separate npm package that is not part of the root workspace: the root workspace globs only `src/*` ([package.json](https://github.com/StarCruiseStudios/SpecNRoll/blob/main/package.json)), while `V0/` has its own `package.json`, lockfile, build, tests, and agent conventions ([V0/package.json](https://github.com/StarCruiseStudios/SpecNRoll/blob/main/V0/package.json), [V0/AGENTS.md](https://github.com/StarCruiseStudios/SpecNRoll/blob/main/V0/AGENTS.md)). It publishes the same executable names (`spec-n-roll`, `snr`) plus a CLI and an MCP server, built from a single package rather than split into dispatcher, runtime, API, SDK, and MCP packages ([V0/package.json](https://github.com/StarCruiseStudios/SpecNRoll/blob/main/V0/package.json), [README](https://github.com/StarCruiseStudios/SpecNRoll/blob/main/README.md)). Its source holds an Ink-based CLI, a dependency-injected application layer, and an MCP server ([V0/src](https://github.com/StarCruiseStudios/SpecNRoll/tree/main/V0/src)).
+
+Unlike the stub runtime, `V0/` documents implemented workflow behavior: slash commands, step initialisation and finalisation, task-spec lifecycle, `init`, `update`, `config agent`, and an extension mechanism for replacing workflow steps and registering hooks ([V0/docs/README.md](https://github.com/StarCruiseStudios/SpecNRoll/blob/main/V0/docs/README.md), [V0/docs/extension-quickstart.md](https://github.com/StarCruiseStudios/SpecNRoll/blob/main/V0/docs/extension-quickstart.md)). The extension documentation therefore describes `V0/` behavior, not `src/`. The docs state that they cover implemented behavior only and mark planned work with `TODO:` ([V0/docs/README.md](https://github.com/StarCruiseStudios/SpecNRoll/blob/main/V0/docs/README.md)).
+
+History: the `V0/` folder was created by a commit that moved the repository's original `docs/` and project files into it ([commit 6b6c919](https://github.com/StarCruiseStudios/SpecNRoll/commit/6b6c919), historical). The `src/` packages were built afterwards around the dispatcher and runtime split, and `V0/` continued to receive changes ([V0 history](https://github.com/StarCruiseStudios/SpecNRoll/commits/main/V0)).
+
+Inference: `V0/` is the earlier, fuller toolkit kept in the repository as reference and working code while `src/` is rebuilt as the successor. The root README, `AGENTS.md`, and `src/README.md` do not mention `V0/`, so this role rests on the folder move, the separate package, and the contrast between its documented features and the stub runtime, not on an author statement ([README](https://github.com/StarCruiseStudios/SpecNRoll/blob/main/README.md), [src/README.md](https://github.com/StarCruiseStudios/SpecNRoll/blob/main/src/README.md)).
 
 ## Architecture
 
@@ -87,8 +101,8 @@ The dispatcher stays focused on routing so that runtime packages own command beh
 
 ## Open questions
 
-- The relationship between the `V0` folder and the current packages is not stated in the files read.
-- Which of the capabilities in the README exist beyond the stub runtime is not confirmed.
+- Whether `V0/` is intended to be ported into `src/`, kept as reference, or retired is not stated by the authors.
+- Which of the capabilities in the README exist in `src/` beyond the stub runtime is not confirmed; the fuller behavior is in `V0/`.
 
 ## Pages in this system
 

@@ -70,6 +70,7 @@ The tooling runs locally on a developer machine. After installing the pet, the d
 ## Pages in this system
 
 - Flows: [Sprite build pipeline](/wiki/areas/agent-workspace/systems/codex-commander/flows/sprite-build-pipeline.md)
+- Concepts: [Motion expressions](/wiki/areas/agent-workspace/systems/codex-commander/concepts/motion-expressions.md)
 
 ## Wider scope
 
