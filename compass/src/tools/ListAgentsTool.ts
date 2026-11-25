@@ -14,7 +14,7 @@ export class ListAgentsTool {
   async execute(input: unknown) {
     try {
       const parsed = ListAgentsInput.safeParse(input);
-      if (!parsed.success) throw new CompassError('invalid_project_root', 'The input must contain an explicit absolute projectRoot and no unknown fields.');
+      if (!parsed.success) throw new CompassError('invalid_project_root', 'The input may contain only a string projectRoot (required unless the server was launched with --project-root) and no unknown fields.');
       return this.results.success(await this.catalog.list(parsed.data.projectRoot));
     } catch (error) { return this.results.failure(error); }
   }

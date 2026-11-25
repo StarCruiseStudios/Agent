@@ -28,7 +28,15 @@ Configure an MCP host with `compass` as its command and no arguments, with npm's
 
 You can also launch `node` with the absolute path to `compass/dist/main.js` as its argument, or run `npm start`. Diagnostics go to stderr; stdout is reserved for MCP messages.
 
-Every tool call must include an explicit absolute `projectRoot`. There is no cwd default, environment override, or parent-directory search.
+Every tool call must include an absolute `projectRoot`, unless the server was launched with `--project-root <path>` (or `--project-root=<path>`). That launch flag is the only supported default; an explicit per-call `projectRoot` always overrides it. There is no cwd default, environment override, or parent-directory search.
+
+The launch value may be absolute or relative; a relative value resolves once at startup against the server's working directory, so a host that cannot expand variables can pass `--project-root kotlin` and start the process in the project directory. The value is validated at startup: an invalid directory, an unknown argument, a missing value or a repeated flag prints a message to stderr and exits non-zero.
+
+```json
+{"command":"compass","args":["--project-root","E:/Source/Github/StarCruiseStudios/Agent"]}
+```
+
+With that default, calls omit the root: `{"name":"list_agents","arguments":{}}`.
 
 ```json
 {"name":"list_agents","arguments":{"projectRoot":"E:/Source/Github/StarCruiseStudios/Agent"}}

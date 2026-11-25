@@ -22,15 +22,17 @@ The pack name is the subdirectory name under `.compass`. It is the only id calle
 
 ### How the server finds the project
 
-The server does not read environment variables to find the catalog, and it never searches parent directories. Every successful tool call requires an explicit absolute `projectRoot`. Resolution order:
+The server does not read environment variables to find the catalog, and it never searches parent directories. The only supported default is the launch flag `--project-root <path>` (or `--project-root=<path>`). Resolution order for every tool call:
 
-1. If the tool call includes absolute `projectRoot`, use it.
-2. When the caller omits it, return an error.
+1. If the tool call includes an absolute `projectRoot`, use it. It always overrides the launch default.
+2. Otherwise, if the server was launched with `--project-root`, use that default.
+3. Otherwise, return `invalid_project_root`.
 
 Rules:
 
 - The server looks only at `<project root>/.compass`. It does not look in a parent of the project root, and a `.compass` nested under a child directory is not this catalog.
-- `projectRoot` must be absolute. A relative value is `invalid_project_root`. The server does not resolve it against the cwd.
+- A per-call `projectRoot` must be absolute. A relative value is `invalid_project_root`. The server does not resolve it against the cwd, and an invalid explicit value never falls back to the launch default.
+- The launch value may be absolute or relative. A relative value is resolved once, at startup, against the server process's cwd. It is validated at startup with the same checks (an accessible directory); if invalid, or if arguments are unknown, repeated or missing a value, the server writes a message to stderr and exits non-zero (1 for an invalid root, 2 for a usage error) before serving. There is no environment-variable override, no cwd default when the flag is absent, and no parent search.
 - `projectRoot` is trusted caller input. The user who launched the server can point it at any directory the process can read. The untrusted value is `name`, which must stay inside that project's `.compass`.
 
 The catalog path is exactly `<project root>/.compass`. If that directory does not exist, the catalog is missing. Do not look anywhere else. A `.compass` directory in a parent or a child of the project root is not the catalog. There is one catalog per root. A monorepo caller passes the root it means.
@@ -262,7 +264,7 @@ Output:
 
 Build first (`npm run build` in `compass/`). Hosts launch the built file with Node. They do not launch `tsx`. The samples below use a placeholder absolute path; each machine substitutes its own. Compass does not edit these files.
 
-The server reads no environment variable to find `.compass`, and it does not search parent directories. Every host passes absolute `projectRoot` on every tool call, regardless of the process cwd. Do not add an env block. The input schemas permit omission only so handlers can return the documented `invalid_project_root` tool error; omission never selects a default.
+The server reads no environment variable to find `.compass`, and it does not search parent directories. Unless the host launches the server with `--project-root`, every host passes absolute `projectRoot` on every tool call, regardless of the process cwd. Do not add an env block. The input schemas permit omission so handlers can use the launch default or return the documented `invalid_project_root` tool error; omission selects a default only when `--project-root` was given.
 
 ### Codex
 
@@ -275,7 +277,7 @@ args = ["E:/Source/Github/StarCruiseStudios/Agent/compass/dist/main.js"]
 cwd = "E:/Source/Github/StarCruiseStudios/Agent"
 ```
 
-`cwd` may be the project root, but does not select the catalog. Pass explicit absolute `projectRoot` on every tool call. `command` plus `args` is the stdio launch. No URL and no remote executor.
+`cwd` may be the project root, but does not select the catalog. Pass explicit absolute `projectRoot` on every tool call, or add `--project-root` to `args`. `command` plus `args` is the stdio launch. No URL and no remote executor.
 
 ### Cursor
 
@@ -367,7 +369,7 @@ Each file has one top-level export. Classes take dependencies through constructo
 | `src/catalog/AgentSummary.ts` | Summary type returned by list. |
 | `src/catalog/AgentInstructions.ts` | Fetch payload type. |
 | `src/catalog/CatalogProblem.ts` | Problem type and reason tokens. |
-| `src/catalog/ProjectRootResolver.ts` | Resolves the project root from an explicit absolute argument. Omission is `invalid_project_root`. Does not search parent directories and reads no environment variables. |
+| `src/catalog/ProjectRootResolver.ts` | Resolves the project root from an explicit absolute argument, else the validated launch default. With neither, `invalid_project_root`. Does not search parent directories and reads no environment variables. |
 | `src/catalog/CompassPathGuard.ts` | Name pattern and realpath containment. |
 | `src/filesystem/FileSystem.ts` | Narrow filesystem interface used by the catalog. |
 | `src/filesystem/NodeFileSystem.ts` | `node:fs` implementation of that interface. |

@@ -16,7 +16,7 @@ export class FetchAgentInstructionsTool {
       const parsed = FetchAgentInstructionsInput.safeParse(input);
       if (!parsed.success) {
         const invalidRoot = typeof input === 'object' && input !== null && 'name' in input && typeof input.name === 'string';
-        throw new CompassError(invalidRoot ? 'invalid_project_root' : 'invalid_name', 'The fetch input must contain a pack name and an explicit absolute projectRoot and no unknown fields.');
+        throw new CompassError(invalidRoot ? 'invalid_project_root' : 'invalid_name', 'The fetch input must contain a pack name and, unless the server was launched with --project-root, an absolute projectRoot, with no unknown fields.');
       }
       return this.results.success(await this.catalog.fetch(parsed.data.projectRoot, parsed.data.name));
     } catch (error) { return this.results.failure(error); }

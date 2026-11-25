@@ -13,5 +13,5 @@ export class CompassMain {
 }
 
 if (process.argv[1] && pathToFileURL(realpathSync(process.argv[1])).href === import.meta.url) {
-  new CompassMain(new CompassProcess()).start();
+  new CompassMain(new CompassProcess(process.argv.slice(2))).start();
 }
