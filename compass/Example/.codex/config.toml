@@ -1,4 +1,4 @@
 [mcp_servers.compass]
 command = "compass"
-args = []
+args = ["--project-root", "."]
 cwd = ".."

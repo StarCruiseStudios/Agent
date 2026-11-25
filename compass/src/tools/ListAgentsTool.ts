@@ -1,21 +1,12 @@
-import type { AgentCatalog } from '../catalog/AgentCatalog.ts';
-import { CompassError } from '../catalog/CompassError.ts';
+import { CatalogTool } from './CatalogTool.ts';
 import { ListAgentsInput } from './ListAgentsInput.ts';
-import type { ToolResultFactory } from './ToolResultFactory.ts';
 
 /**
- * Parses list requests and converts all failures to tool results.
+ * `list_agents`: agent summaries plus catalog-wide problems.
  */
-export class ListAgentsTool {
-  private readonly catalog: AgentCatalog;
-  private readonly results: ToolResultFactory;
-  constructor(catalog: AgentCatalog, results: ToolResultFactory) { this.catalog = catalog; this.results = results; }
-
-  async execute(input: unknown) {
-    try {
-      const parsed = ListAgentsInput.safeParse(input);
-      if (!parsed.success) throw new CompassError('invalid_project_root', 'The input may contain only a string projectRoot (required unless the server was launched with --project-root) and no unknown fields.');
-      return this.results.success(await this.catalog.list(parsed.data.projectRoot));
-    } catch (error) { return this.results.failure(error); }
+export class ListAgentsTool extends CatalogTool<typeof ListAgentsInput> {
+  readonly input = ListAgentsInput;
+  protected async run(input: typeof ListAgentsInput._output) {
+    return this.results.success(await this.catalog.list(input.projectRoot));
   }
 }

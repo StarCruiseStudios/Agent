@@ -112,7 +112,10 @@ test('next call reads edited metadata and instructions, including list body vali
   assert.equal((await service.fetch(root, 'reviewer')).instructions, 'Updated body');
   assert.equal((await service.list(root)).agents[0].modelHint, 'new-model');
   await fs.writeFile(path.join(directory, 'instructions.md'), '  ');
-  assert.equal((await service.list(root)).problems[0].reason, 'malformed_pack:empty_instructions');
+  assert.deepEqual((await service.list(root)).agents.map(agent => agent.name), ['reviewer']);
+  await assert.rejects(service.fetch(root, 'reviewer'), failure('malformed_pack', 'empty_instructions'));
+  await fs.unlink(path.join(directory, 'instructions.md'));
+  assert.equal((await service.list(root)).problems[0].reason, 'malformed_pack:missing_instructions');
 });
 
 test('internal and external real directory links obey containment', async t => {
@@ -163,10 +166,70 @@ test('directory link classification includes broken links but ignores links to l
 test('an existing unreadable catalog is never reported as missing', async t => {
   const root = await temporary(t);
   await fs.writeFile(path.join(root, '.compass'), 'not a directory');
-  await assert.rejects(catalog().list(root), failure('malformed_pack', 'unreadable'));
+  await assert.rejects(catalog().list(root), failure('catalog_unreadable'));
+  await assert.rejects(catalog().fetch(root, 'reviewer'), failure('catalog_unreadable'));
   const fake = override(native, { readdir: async value => {
     if (value.endsWith('.compass')) throw Object.assign(new Error('dangling catalog'), { code: 'ENOENT' });
     return native.readdir(value);
   } });
-  await assert.rejects(catalog(fake).list(root), failure('malformed_pack', 'unreadable'));
+  await assert.rejects(catalog(fake).list(root), failure('catalog_unreadable'));
+});
+
+const near: Array<[string, string[]]> = [
+  ['reveiwer', ['reviewer']],
+  ['review', ['reviewer']],
+  ['writer', ['writer-pro']],
+  ['zzzzzz', []],
+];
+for (const [requested, expected] of near) {
+  test(`unknown agent ${requested} names the request and suggests ${JSON.stringify(expected)}`, async t => {
+    const root = await temporary(t);
+    await pack(root, 'reviewer');
+    await pack(root, 'writer-pro');
+    await fs.mkdir(path.join(root, '.compass', 'Reviewers'));
+    await assert.rejects(catalog().fetch(root, requested), (error: unknown) => {
+      assert.ok(error instanceof CompassError);
+      assert.equal(error.code, 'unknown_agent');
+      assert.equal(error.details.name, requested);
+      assert.deepEqual(error.details.suggestions, expected);
+      assert.ok(error.message.includes(`"${requested}"`));
+      assert.equal(error.message.includes('Did you mean'), expected.length > 0);
+      return true;
+    });
+  });
+}
+
+test('agent suggestions are capped at three across every referenced catalog', async t => {
+  const root = await temporary(t);
+  const shared = path.join(root, 'shared');
+  for (const name of ['task-a', 'task-b']) await pack(root, name);
+  for (const name of ['task-c', 'task-d', 'task-a']) await pack(shared, name);
+  await fs.writeFile(path.join(root, '.compass', 'config.json'), JSON.stringify({ directories: ['../shared/.compass'] }));
+  await assert.rejects(catalog().fetch(root, 'task-x'), (error: unknown) =>
+    error instanceof CompassError && JSON.stringify(error.details.suggestions) === JSON.stringify(['task-a', 'task-b', 'task-c']));
+});
+
+const normalized: Array<[unknown, string | undefined]> = [
+  ['Reviewer', 'reviewer'], [' reviewer ', 'reviewer'], ['Code Review', 'code-review'], ['code_review', 'code-review'],
+  ['../reviewer', undefined], ['a--b', undefined], [7, undefined],
+];
+for (const [name, suggestion] of normalized) {
+  test(`invalid name ${JSON.stringify(name)} suggests ${JSON.stringify(suggestion)}`, async () => {
+    await assert.rejects(catalog().fetch(undefined, name), (error: unknown) => {
+      assert.ok(error instanceof CompassError);
+      assert.equal(error.code, 'invalid_name');
+      assert.deepEqual(error.details.suggestions, suggestion ? [suggestion] : undefined);
+      assert.equal(error.message.includes('Did you mean'), suggestion !== undefined);
+      return true;
+    });
+  });
+}
+
+test('malformed fetch errors carry the agent name and path', async t => {
+  const root = await temporary(t);
+  const directory = await pack(root);
+  await fs.writeFile(path.join(directory, 'agent.json'), '{');
+  await assert.rejects(catalog().fetch(root, 'reviewer'), (error: unknown) =>
+    error instanceof CompassError && error.code === 'malformed_pack' && error.reason === 'invalid_metadata' &&
+    error.details.name === 'reviewer' && error.details.path === path.join(root, '.compass', 'reviewer'));
 });

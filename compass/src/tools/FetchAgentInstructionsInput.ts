@@ -1,15 +1,16 @@
 import { z } from 'zod';
+import { ProjectRootField } from './ProjectRootField.ts';
 
 /**
- * Fetch input keeps name validation in the handler, before filesystem access.
+ * Input for `fetch_agent_instructions`. Name rules are checked by the catalog, before filesystem access.
  */
 export const FetchAgentInstructionsInput = z.strictObject({
   /**
-   * Single case-sensitive pack directory name.
+   * Explicit absolute root; when omitted, the launch `--project-root` default is used.
    */
-  name: z.string().describe('Exact case-sensitive pack name assigned or returned by list_agents; a directory name, not a path.'),
+  projectRoot: ProjectRootField,
   /**
-   * Explicit absolute root; omission returns invalid_project_root.
+   * Exact case-sensitive agent name.
    */
-  projectRoot: z.string().optional().describe('Absolute project root; reads its .compass catalog and recursively configured directories. Overrides the launch --project-root. Required unless the server was launched with --project-root; no cwd default or parent search.'),
+  name: z.string().describe('Exact agent name, as assigned or as returned by list_agents.'),
 });

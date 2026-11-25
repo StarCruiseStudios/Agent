@@ -15,7 +15,20 @@ test('parses absent flag, separate value and = form', () => {
   assert.equal(LaunchArguments.parse(['--project-root=a=b']).projectRoot, 'a=b');
 });
 
+test('parses --log-level in both forms alongside --project-root and defaults to info', () => {
+  assert.equal(LaunchArguments.parse([]).logLevel, 'info');
+  for (const level of ['debug', 'info', 'warn', 'error'] as const) {
+    assert.equal(LaunchArguments.parse(['--log-level', level]).logLevel, level);
+    const both = LaunchArguments.parse([`--log-level=${level}`, '--project-root', 'x']);
+    assert.deepEqual([both.logLevel, both.projectRoot], [level, 'x']);
+  }
+});
+
 test('rejects missing value, repeated flag and unknown arguments', () => {
+  for (const args of [['--log-level'], ['--log-level='], ['--log-level', '--project-root'], ['--log-level', 'trace'],
+    ['--log-level', 'INFO'], ['--log-level', 'info', '--log-level', 'info'], ['--log-levelx=info']]) {
+    assert.throws(() => LaunchArguments.parse(args), LaunchUsageError, JSON.stringify(args));
+  }
   for (const args of [['--project-root'], ['--project-root='], ['--project-root', '--other'],
     ['--project-root', 'a', '--project-root', 'b'], ['--project-root=a', '--project-root=b'],
     ['--project-root', 'a', '--project-root=b'], ['--bogus'], ['positional'], ['--project-root', 'a', 'extra']]) {

@@ -3,15 +3,21 @@ import { z } from 'zod';
 import type { FileSystem } from '../filesystem/FileSystem.ts';
 import type { CatalogProblem } from './CatalogProblem.ts';
 import { CompassError } from './CompassError.ts';
+import { DirectoryScanner } from './DirectoryScanner.ts';
 import { resolveCompassReference } from './resolveCompassReference.ts';
 
 const Config = z.strictObject({ directories: z.array(z.string().refine(value => value.trim().length > 0)) });
+
+/**
+ * One visited Compass directory and its candidate agent directory names, in visit order.
+ */
 export interface CatalogDirectory { compassPath: string; names: string[] }
 
 /** Discovers explicit references in preorder, distinguishing cycles from shared dependencies. */
 export class CatalogGraph {
   private readonly fs: FileSystem;
-  constructor(fs: FileSystem) { this.fs = fs; }
+  private readonly scanner: DirectoryScanner;
+  constructor(fs: FileSystem, scanner: DirectoryScanner) { this.fs = fs; this.scanner = scanner; }
 
   async discover(projectRoot: string) {
     const compassPath = path.join(projectRoot, '.compass');
@@ -33,7 +39,8 @@ export class CatalogGraph {
               if (!(await this.fs.readdir(projectRoot)).some(entry => entry.name === '.compass')) return;
             } catch { /* Existing or unreadable root catalog is an error. */ }
           }
-          throw new CompassError('malformed_pack', 'The catalog is malformed: unreadable.');
+          throw new CompassError('catalog_unreadable', 'The project catalog exists but cannot be read as a directory.',
+            { details: { path: compassPath } });
         }
         problems.push({ name: path.basename(directory), path: directory, reason: 'catalog_unreadable' });
         return;
@@ -47,16 +54,7 @@ export class CatalogGraph {
       }
       if (completed.has(key)) return;
       active.push({ key, path: real });
-      const names: string[] = [];
-      for (const entry of entries) {
-        if (entry.name.startsWith('.') || entry.name === 'config.json') continue;
-        if (entry.isDirectory()) names.push(entry.name);
-        else if (entry.isSymbolicLink()) {
-          try { if ((await this.fs.stat(path.join(real, entry.name))).isDirectory()) names.push(entry.name); }
-          catch { names.push(entry.name); }
-        }
-      }
-      directories.push({ compassPath: real, names: names.sort() });
+      directories.push({ compassPath: real, names: await this.scanner.childDirectories(real, entries) });
       if (entries.some(entry => entry.name === 'config.json')) {
         let references: string[] = [];
         try {

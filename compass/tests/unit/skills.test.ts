@@ -21,7 +21,7 @@ test('skills are agent scoped, sorted, described only in details and refreshed o
   const details = await service.fetch(root, 'reviewer');
   assert.deepEqual(details.skills, [{ name: 'alpha', description: 'A skill.' }, { name: 'zebra', description: 'A skill.' }]);
   assert.deepEqual(details.skillProblems, []);
-  assert.deepEqual(details.catalogProblems, []);
+  assert.equal('catalogProblems' in details, false);
   assert.equal((await service.fetchSkill(root, 'reviewer', 'zebra')).instructions, 'First body');
   assert.equal((await service.fetchSkill(root, 'writer', 'zebra')).instructions, 'Other body');
   await fs.writeFile(path.join(first, 'SKILL.md'), '---\nname: zebra\ndescription: Updated\nextra: allowed\n---\nChanged');
@@ -135,10 +135,49 @@ test('skill tool has matching text/structured results and handles input failures
     { projectRoot: root, agentName: 'reviewer', skillName: '../bad' },
     { projectRoot: root, agentName: 'reviewer', skillName: 'sample', extra: true },
   ]) {
-    const result = await tool.execute(input);
-    assert.deepEqual(JSON.parse(result.content[0].text), result.structuredContent);
-    if ('isError' in result) assert.deepEqual(Object.keys(result.structuredContent).sort(), ['error', 'message']);
+    const result: any = await tool.execute(input);
+    if ('isError' in result) assert.deepEqual(JSON.parse(result.content[0].text), result.structuredContent);
+    else assert.equal(result.content[0].text, result.structuredContent.instructions);
   }
-  assert.equal((await tool.execute({})).structuredContent.error, 'invalid_name');
-  assert.equal((await tool.execute({ agentName: 'reviewer', skillName: 'sample' })).structuredContent.error, 'invalid_project_root');
+  const codes = async (input: unknown) => ((await tool.execute(input)) as any).structuredContent.error;
+  assert.equal(await codes({}), 'invalid_input');
+  assert.equal(await codes({ projectRoot: root, agentName: 'reviewer', skillName: 'sample', extra: true }), 'invalid_input');
+  assert.equal(await codes({ agentName: 'reviewer', skillName: 'sample' }), 'invalid_project_root');
+  assert.equal(await codes({ projectRoot: root, agentName: 'reviewer', skillName: '../bad' }), 'invalid_name');
+});
+
+test('unknown skills name the request and suggest at most three close skill names', async t => {
+  const root = await temporary(t);
+  const agent = await pack(root);
+  for (const name of ['deploy-a', 'deploy-b', 'deploy-c', 'deploy-d', 'review']) await skill(agent, name);
+  const rejection = async (name: string) => {
+    try { await catalog().fetchSkill(root, 'reviewer', name); } catch (error) { return error as CompassError; }
+    return assert.fail('expected unknown_skill');
+  };
+  const near = await rejection('deploy-x');
+  assert.equal(near.code, 'unknown_skill');
+  assert.equal(near.details.name, 'deploy-x');
+  assert.deepEqual(near.details.suggestions, ['deploy-a', 'deploy-b', 'deploy-c']);
+  assert.match(near.message, /"deploy-x".*Did you mean: deploy-a, deploy-b, deploy-c\?/);
+  assert.deepEqual((await rejection('reveiw')).details.suggestions, ['review']);
+  const far = await rejection('zzz');
+  assert.deepEqual(far.details.suggestions, []);
+  assert.doesNotMatch(far.message, /Did you mean/);
+  const none = await temporary(t);
+  await pack(none);
+  await assert.rejects(catalog().fetchSkill(none, 'reviewer', 'deploy'), (error: unknown) =>
+    error instanceof CompassError && error.code === 'unknown_skill' && (error.details.suggestions as string[]).length === 0);
+});
+
+test('fetching a skill validates its agent cheaply: the agent body is not read', async t => {
+  const root = await temporary(t);
+  const agent = await pack(root);
+  await skill(agent, 'sample');
+  const native = new NodeFileSystem();
+  const guarded = override(native, { readFile: async file => {
+    assert.ok(!file.endsWith('instructions.md'), 'agent body read'); return native.readFile(file); } });
+  assert.equal((await catalog(guarded).fetchSkill(root, 'reviewer', 'sample')).instructions, 'Skill instructions.');
+  await fs.writeFile(path.join(agent, 'agent.json'), '{');
+  await assert.rejects(catalog().fetchSkill(root, 'reviewer', 'sample'), (error: unknown) =>
+    error instanceof CompassError && error.code === 'malformed_pack' && error.reason === 'invalid_metadata');
 });

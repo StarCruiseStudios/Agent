@@ -1,14 +1,18 @@
 import type { AgentSummary } from './AgentSummary.ts';
 import type { SkillSummary, SkillProblem } from './SkillCatalog.ts';
-import type { CatalogProblem } from './CatalogProblem.ts';
 
 /**
  * A fetched pack, including its complete Markdown body and resolved paths.
  */
 export interface AgentInstructions extends AgentSummary {
+  /**
+   * Valid skills of this agent, sorted by name; bodies are fetched separately.
+   */
   skills: SkillSummary[];
+  /**
+   * Skills of this agent that could not be loaded.
+   */
   skillProblems: SkillProblem[];
-  catalogProblems: CatalogProblem[];
   /**
    * Canonical absolute project root.
    */

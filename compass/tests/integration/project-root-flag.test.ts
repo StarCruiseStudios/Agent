@@ -19,6 +19,9 @@ async function build() {
 async function serve(t: any, args: string[], cwd = packageRoot) {
   const child = spawn(process.execPath, [entry, ...args], { cwd, stdio: ['pipe', 'pipe', 'pipe'] });
   t.after(() => { child.kill(); });
+  const stderr = { text: '' };
+  child.stderr.setEncoding('utf8');
+  child.stderr.on('data', chunk => { stderr.text += chunk; });
   const pending = new Map<number, (value: any) => void>();
   createInterface({ input: child.stdout }).on('line', line => {
     const message = JSON.parse(line);
@@ -33,11 +36,11 @@ async function serve(t: any, args: string[], cwd = packageRoot) {
   await request('initialize', { protocolVersion: '2025-06-18', capabilities: {}, clientInfo: { name: 'compass-test', version: '1.0.0' } });
   child.stdin.write(JSON.stringify({ jsonrpc: '2.0', method: 'notifications/initialized' }) + '\n');
   const call = async (name: string, args: object) => (await request('tools/call', { name, arguments: args })).result;
-  return { child, call };
+  return { child, call, stderr };
 }
 
 for (const form of ['separate', 'equals', 'relative'] as const) {
-  test(`--project-root (${form}) lets all three tools run without projectRoot`, { timeout: 30000 }, async t => {
+  test(`--project-root (${form}) lets all tools run without projectRoot`, { timeout: 30000 }, async t => {
     await build();
     const args = form === 'separate' ? ['--project-root', fixtureRoot]
       : form === 'equals' ? [`--project-root=${fixtureRoot}`] : ['--project-root', 'project'];
@@ -76,7 +79,8 @@ test('invalid launch path fails fast on stderr with non-zero exit and empty stdo
 
 test('usage errors exit non-zero on stderr', { timeout: 30000 }, async () => {
   await build();
-  for (const args of [['--bogus'], ['--project-root'], ['--project-root', 'a', '--project-root', 'b']]) {
+  for (const args of [['--bogus'], ['--project-root'], ['--project-root', 'a', '--project-root', 'b'],
+    ['--log-level'], ['--log-level', 'verbose'], ['--log-level=trace'], ['--log-level', 'info', '--log-level=warn']]) {
     await assert.rejects(execute(process.execPath, [entry, ...args], { cwd: packageRoot, timeout: 10000 }), (error: any) => {
       assert.equal(error.code, 2);
       assert.equal(error.stdout, '');
@@ -85,3 +89,26 @@ test('usage errors exit non-zero on stderr', { timeout: 30000 }, async () => {
     });
   }
 });
+
+const levels = [
+  ['debug', { debug: true, info: true, warn: true }],
+  ['info', { debug: false, info: true, warn: true }],
+  ['warn', { debug: false, info: false, warn: true }],
+  ['error', { debug: false, info: false, warn: false }],
+  [undefined, { debug: false, info: true, warn: true }],
+] as const;
+for (const [level, shown] of levels) {
+  test(`--log-level ${level ?? '(default)'} filters stderr diagnostics`, { timeout: 30000 }, async t => {
+    await build();
+    const { child, call, stderr } = await serve(t, ['--project-root', fixtureRoot, ...(level ? ['--log-level', level] : [])]);
+    await call('list_agents', {});
+    await call('fetch_agent_instructions', { name: 'missing' });
+    const exit = once(child, 'exit');
+    child.stdin.end();
+    await exit;
+    assert.equal(/Resolved catalog/.test(stderr.text), shown.debug, 'debug');
+    assert.equal(/Listed catalog/.test(stderr.text), shown.info, 'info');
+    assert.equal(/Tool call rejected/.test(stderr.text), shown.warn, 'warn');
+    assert.equal(/"logLevelName":"ERROR"/.test(stderr.text), false, 'caller errors never log at error level');
+  });
+}

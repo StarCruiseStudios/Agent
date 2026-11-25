@@ -6,7 +6,7 @@ At the start of each new user task or explicitly delegated subtask, consult the 
 - **When executing a task with an assigned pack:** Call `fetch_agent_instructions` directly using the assigned pack name. Do not list packs first.
 - **When executing a task without an assigned pack:** Call `list_agents`, select the most relevant applicable pack, and fetch its instructions. If none applies, continue normally.
 
-Always pass the absolute `projectRoot` to Compass calls.
+Compass is launched with `--project-root .`, so omit `projectRoot` from Compass calls.
 
 Do not repeat discovery for ordinary implementation steps within the same task. Consult Compass again when starting a separately delegated subtask or when the task's scope materially changes.
 

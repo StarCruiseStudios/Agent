@@ -8,29 +8,64 @@ import { NodeFileSystem } from '../../src/filesystem/NodeFileSystem.ts';
 import { catalog, metadata, override, pack, temporary } from '../helpers.ts';
 
 const native = new NodeFileSystem();
-const scenarios: Array<[string, (directory: string) => Promise<unknown>]> = [
-  ['missing_metadata', directory => fs.unlink(path.join(directory, 'agent.json'))],
-  ['invalid_encoding', directory => fs.writeFile(path.join(directory, 'agent.json'), new Uint8Array([0xc3, 0x28]))],
-  ['invalid_metadata', directory => fs.writeFile(path.join(directory, 'agent.json'), '{')],
-  ['name_mismatch', directory => fs.writeFile(path.join(directory, 'agent.json'), JSON.stringify(metadata('another')))],
-  ['missing_instructions', directory => fs.unlink(path.join(directory, 'instructions.md'))],
-  ['instructions_too_large', directory => fs.writeFile(path.join(directory, 'instructions.md'), Buffer.alloc(262145, 0xff))],
-  ['invalid_encoding', directory => fs.writeFile(path.join(directory, 'instructions.md'), new Uint8Array([0xff]))],
-  ['empty_instructions', directory => fs.writeFile(path.join(directory, 'instructions.md'), ' \r\n\t')],
-  ['empty_instructions', directory => fs.writeFile(path.join(directory, 'instructions.md'), '')],
+// `listed` marks failures that list_agents detects without reading the instruction body.
+const scenarios: Array<[string, boolean, (directory: string) => Promise<unknown>]> = [
+  ['missing_metadata', true, directory => fs.unlink(path.join(directory, 'agent.json'))],
+  ['invalid_encoding', true, directory => fs.writeFile(path.join(directory, 'agent.json'), new Uint8Array([0xc3, 0x28]))],
+  ['invalid_metadata', true, directory => fs.writeFile(path.join(directory, 'agent.json'), '{')],
+  ['name_mismatch', true, directory => fs.writeFile(path.join(directory, 'agent.json'), JSON.stringify(metadata('another')))],
+  ['missing_instructions', true, directory => fs.unlink(path.join(directory, 'instructions.md'))],
+  ['instructions_too_large', true, directory => fs.writeFile(path.join(directory, 'instructions.md'), Buffer.alloc(262145, 0xff))],
+  ['invalid_encoding', false, directory => fs.writeFile(path.join(directory, 'instructions.md'), new Uint8Array([0xff]))],
+  ['empty_instructions', false, directory => fs.writeFile(path.join(directory, 'instructions.md'), ' \r\n\t')],
+  ['empty_instructions', false, directory => fs.writeFile(path.join(directory, 'instructions.md'), '')],
 ];
 
-for (const [token, mutate] of scenarios) {
-  test(`malformed pack: ${token} (list and fetch)`, async t => {
+for (const [token, listed, mutate] of scenarios) {
+  test(`malformed pack: ${token} (fetch${listed ? ' and list' : ' only'})`, async t => {
     const root = await temporary(t);
     await mutate(await pack(root));
     await assert.rejects(catalog().fetch(root, 'reviewer'), error =>
-      error instanceof CompassError && error.code === 'malformed_pack' && error.message.includes(`${token}.`));
+      error instanceof CompassError && error.code === 'malformed_pack' && error.reason === token && error.message.includes(`${token}.`));
     const list = await catalog().list(root);
-    assert.deepEqual(list.agents, []);
-    assert.equal(list.problems[0].reason, `malformed_pack:${token}`);
+    if (listed) {
+      assert.deepEqual(list.agents, []);
+      assert.equal(list.problems[0].reason, `malformed_pack:${token}`);
+    } else {
+      assert.deepEqual(list.agents.map(agent => agent.name), ['reviewer']);
+      assert.deepEqual(list.problems, []);
+    }
   });
 }
+
+test('list never reads instruction bodies and checks their size by byte length at the exact limit', async t => {
+  const root = await temporary(t);
+  const directory = await pack(root);
+  const guarded = override(native, { readFile: async file => {
+    assert.ok(!file.endsWith('instructions.md'), 'list read the body'); return native.readFile(file); } });
+  await fs.writeFile(path.join(directory, 'instructions.md'), Buffer.alloc(262144, 0x61));
+  assert.deepEqual((await catalog(guarded).list(root)).agents.map(agent => agent.name), ['reviewer']);
+  await fs.writeFile(path.join(directory, 'instructions.md'), 'é'.repeat(131073));
+  assert.equal((await catalog(guarded).list(root)).problems[0].reason, 'malformed_pack:instructions_too_large');
+});
+
+test('list reports an instructions directory, an unstattable body and a dangling body link as unreadable', async t => {
+  const root = await temporary(t);
+  const directory = await pack(root);
+  await fs.unlink(path.join(directory, 'instructions.md'));
+  await fs.mkdir(path.join(directory, 'instructions.md'));
+  assert.equal((await catalog().list(root)).problems[0].reason, 'malformed_pack:unreadable');
+  await fs.rmdir(path.join(directory, 'instructions.md'));
+  await fs.writeFile(path.join(directory, 'instructions.md'), 'Body');
+  const file = path.join(directory, 'instructions.md');
+  for (const code of ['EACCES', 'ENOENT']) {
+    const fake = override(native, { stat: async value => {
+      if (value === file) throw Object.assign(new Error('stat failed'), { code });
+      return native.stat(value);
+    } });
+    assert.equal((await catalog(fake).list(root)).problems[0].reason, 'malformed_pack:unreadable', code);
+  }
+});
 
 test('unreadable required file and directory failure are malformed, not missing', async t => {
   const root = await temporary(t);

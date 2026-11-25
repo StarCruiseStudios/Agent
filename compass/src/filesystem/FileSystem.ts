@@ -3,7 +3,7 @@
  */
 export interface FileSystem {
   realpath(path: string): Promise<string>;
-  stat(path: string): Promise<{ isDirectory(): boolean }>;
+  stat(path: string): Promise<{ isDirectory(): boolean; size: number }>;
   readdir(path: string): Promise<Array<{ name: string; isDirectory(): boolean; isSymbolicLink(): boolean }>>;
   readFile(path: string): Promise<Uint8Array>;
 }

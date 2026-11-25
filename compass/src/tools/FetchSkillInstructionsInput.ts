@@ -1,7 +1,20 @@
 import { z } from 'zod';
+import { ProjectRootField } from './ProjectRootField.ts';
 
+/**
+ * Input for `fetch_skill_instructions`. Skill names are scoped to their agent.
+ */
 export const FetchSkillInstructionsInput = z.strictObject({
-  projectRoot: z.string().optional().describe('Absolute project root; includes recursively referenced Compass directories. Overrides the launch --project-root. Required unless the server was launched with --project-root.'),
-  agentName: z.string().describe('Exact agent name; skills belong exclusively to the selected agent.'),
-  skillName: z.string().describe('Exact skill name returned in that agent’s details, not a path.'),
+  /**
+   * Explicit absolute root; when omitted, the launch `--project-root` default is used.
+   */
+  projectRoot: ProjectRootField,
+  /**
+   * Exact name of the agent that owns the skill.
+   */
+  agentName: z.string().describe('Exact name of the agent that owns the skill.'),
+  /**
+   * Exact skill name from that agent's `skills` list.
+   */
+  skillName: z.string().describe('Exact skill name from that agent’s skills list.'),
 });

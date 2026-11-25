@@ -1,11 +1,12 @@
 import { z } from 'zod';
+import { ProjectRootField } from './ProjectRootField.ts';
 
 /**
- * Tool input; absence remains parseable so handlers can return the domain error.
+ * Input for `list_agents`.
  */
 export const ListAgentsInput = z.strictObject({
   /**
-   * Explicit absolute root; omission returns invalid_project_root.
+   * Explicit absolute root; when omitted, the launch `--project-root` default is used.
    */
-  projectRoot: z.string().optional().describe('Absolute project root; reads its .compass catalog and recursively configured directories. Overrides the launch --project-root. Required unless the server was launched with --project-root; no cwd default or parent search.'),
+  projectRoot: ProjectRootField,
 });

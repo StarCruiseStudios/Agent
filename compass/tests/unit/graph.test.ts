@@ -76,8 +76,8 @@ test('self loops and multi-directory loops report chains and retain all reachabl
   assert.deepEqual(result.problems.map(item => item.reason), ['catalog_cycle', 'catalog_cycle']);
   assert.deepEqual(result.problems[0].chain, [path.join(root, '.compass'), path.join(root, '.compass')]);
   assert.deepEqual(result.problems[1].chain, [path.join(root, '.compass'), path.join(child, '.compass'), path.join(root, '.compass')]);
-  assert.deepEqual((await catalog().fetch(root, 'local')).catalogProblems, result.problems);
-  assert.deepEqual((await catalog().fetchSkill(root, 'local', 'sample')).catalogProblems, result.problems);
+  assert.equal('catalogProblems' in await catalog().fetch(root, 'local'), false);
+  assert.equal('catalogProblems' in await catalog().fetchSkill(root, 'local', 'sample'), false);
 });
 
 test('missing references, unreadable directories and invalid configs preserve other branches', async t => {
@@ -184,4 +184,52 @@ test('environment references work recursively, preserve loop detection and refre
   const updated = await service.list(root);
   assert.deepEqual(updated.agents.map(item => item.name), ['local', 'replacement']);
   assert.deepEqual(updated.problems.map(item => item.reason), ['invalid_reference']);
+});
+
+for (const local of ['Reviewer', 'REVIEWER', 'reviewer-']) {
+  test(`an invalidly named local directory ${JSON.stringify(local)} never hides a valid referenced definition`, async t => {
+    const root = await temporary(t);
+    const shared = path.join(root, 'shared');
+    await fs.mkdir(path.join(root, '.compass', local), { recursive: true });
+    await pack(shared);
+    await references(root, ['../shared/.compass']);
+    const list = await catalog().list(root);
+    assert.deepEqual(list.agents.map(item => item.name), ['reviewer']);
+    assert.deepEqual(list.problems.map(item => [item.name, item.reason]), [[local, 'invalid_name']]);
+    const fetched = await catalog().fetch(root, 'reviewer');
+    assert.equal(fetched.compassPath, await fs.realpath(path.join(shared, '.compass')));
+  });
+}
+
+test('a valid earlier definition still shadows later ones, and invalid names are reported in every catalog', async t => {
+  const root = await temporary(t);
+  const shared = path.join(root, 'shared');
+  await pack(root);
+  await pack(shared);
+  await fs.mkdir(path.join(root, '.compass', 'Bad'), { recursive: true });
+  await fs.mkdir(path.join(shared, '.compass', 'Bad'), { recursive: true });
+  await references(root, ['../shared/.compass']);
+  const list = await catalog().list(root);
+  assert.deepEqual(list.agents.map(item => item.name), ['reviewer']);
+  assert.deepEqual(list.problems.map(item => [item.path, item.reason]), [
+    [path.join(root, '.compass', 'Bad'), 'invalid_name'],
+    [path.join(await fs.realpath(path.join(shared, '.compass')), 'Bad'), 'invalid_name'],
+  ]);
+  assert.equal((await catalog().fetch(root, 'reviewer')).compassPath, path.join(root, '.compass'));
+});
+
+test('a local case collision claims the name ahead of a referenced definition', async t => {
+  const root = await temporary(t);
+  const shared = path.join(root, 'shared');
+  await pack(shared);
+  await references(root, ['../shared/.compass']);
+  const native = new NodeFileSystem();
+  const local = path.join(root, '.compass');
+  const fake = override(native, { readdir: async value => value === local
+    ? [...await native.readdir(value), ...['Reviewer', 'reviewer'].map(name => ({ name, isDirectory: () => true, isSymbolicLink: () => false }))]
+    : native.readdir(value) });
+  const list = await catalog(fake).list(root);
+  assert.deepEqual(list.agents, []);
+  assert.deepEqual(list.problems.map(item => item.reason), ['case_collision', 'case_collision']);
+  await assert.rejects(catalog(fake).fetch(root, 'reviewer'), (error: unknown) => error instanceof CompassError && error.code === 'case_collision');
 });

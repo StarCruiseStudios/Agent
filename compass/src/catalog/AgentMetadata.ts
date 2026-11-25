@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { AgentName } from './AgentName.ts';
 
 /**
  * Strict human-authored metadata contract; strings retain their original text.
@@ -7,8 +8,7 @@ export const AgentMetadata = z.strictObject({
   /**
    * Case-sensitive pack directory name.
    */
-  name: z.string().min(1).max(64).regex(/^[a-z][a-z0-9]*(-[a-z0-9]+)*$/)
-    .refine(value => value === value.trim()),
+  name: z.string().min(1).max(AgentName.maxLength).regex(AgentName.pattern),
   /**
    * What the instruction pack does.
    */
@@ -23,7 +23,7 @@ export const AgentMetadata = z.strictObject({
   tools: z.array(z.string().min(1).max(64)).max(32)
     .refine(values => new Set(values).size === values.length).default([]),
   /**
-   * Free-form model selection hint for the spawning host.
+   * Free-form model selection hint for the spawning host (1 to 500 characters).
    */
   modelHint: z.string().min(1).max(500).refine(value => value.trim().length > 0),
 });
