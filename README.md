@@ -10,7 +10,6 @@ A collection of tools, skills, and instructions for working with AI coding agent
 | [`codex-commander/`](./codex-commander/README.md) | Source artwork and build tooling for the Commander custom Codex pet. |
 | [`skills/`](./skills) | A library of reusable agent skills (see below). |
 | [`instructions/`](./instructions) | A library of instruction sets meant to be installed into other projects' `AGENTS.md` or `CLAUDE.md`. |
-| [`wiki/`](./wiki/index.md) | Architecture wiki for this repository and its sibling repositories. |
 
 ## Skills
 
