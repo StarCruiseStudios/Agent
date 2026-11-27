@@ -18,7 +18,7 @@ Each concept has its own file in this folder. This file groups the concepts and 
 | Relationships | [association](association.md) | Yes. Associations are kept apart from the records they relate. |
 | Analysis | [internal knowledge](internal-knowledge.md), [finding](finding.md), [question](question.md) | Yes. |
 | Outputs | [output](output.md), [scope](scope.md), [origin](origin.md), [version](version.md) | No. Archon changes outputs only through approved changes (principle 12). The user can still edit existing knowledge by hand, and the edit is recorded. |
-| Change | [change](change.md), [proposal](proposal.md) | A change can be drafted freely, and it takes effect only once it is approved. |
+| Change | [change](change.md), [proposal](proposal.md), [measurement](measurement.md) | A change can be drafted freely, and it takes effect only once it is approved. |
 
 ## How the groups relate
 

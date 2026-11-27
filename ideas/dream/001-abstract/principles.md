@@ -26,7 +26,7 @@ These principles bind every later layer. They are numbered continuously across t
 
 ## Change
 
-12. **Approve what agents load.** Archon updates its own internal knowledge freely. Memory, practices, and skills that agents use change only through proposals, and a proposal goes live only once it is approved.
+12. **Approve what agents load.** Archon updates its own internal knowledge freely. Archon changes the memory, practices, and skills that agents use only through proposals, and a proposal goes live only once it is approved.
 13. **Read what already exists.** Hand-written instructions, agents' built-in memory, and existing skills are treated as current knowledge. Changes to them may be proposed, and those proposals follow the same approval rule as any other.
 14. **Make every change reversible.** Published changes are versioned, so any of them can be rolled back or replaced.
 15. **Keep published knowledge current.** Published knowledge rests on facts and on what Archon concluded from them. When those facts or conclusions change, the knowledge built on them is checked again, and a revision or retirement is proposed when it no longer holds.

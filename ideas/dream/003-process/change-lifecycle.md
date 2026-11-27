@@ -10,7 +10,7 @@ Each [change](../002-concepts/change.md) in a proposal moves through the followi
 | **Pending** | The change is waiting for a decision. |
 | **Deferred** | The change is undecided and out of review until it is brought back. |
 | **Rejected** | The change was declined, and its reasons are recorded. |
-| **Approved** | The change was approved and is not yet published. |
-| **Published** | The change is in effect. A change to an output has made a new current version or withdrawn the output. A publication to a project has placed its content in the project. |
+| **Approved** | The change was approved and is published. A change to an output has made a new current version or withdrawn the output. |
+| **Taken back** | The approval was taken back, and the output returned to the version it had before the change ([rollback](rollback.md)). A taken-back change can be approved again. |
 
-A [version](../002-concepts/version.md) is superseded when a later published change replaces it. A superseded version stays in the history, and a [rollback](rollback.md) can return to it.
+A [version](../002-concepts/version.md) is superseded when it stops being current. A superseded version stays in the history.

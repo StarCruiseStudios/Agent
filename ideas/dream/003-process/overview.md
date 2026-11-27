@@ -14,8 +14,8 @@ Each step has its own file in this folder, and so does each topic that spans mor
 | `finding-lifecycle.md` | The states a finding moves through. |
 | `change-lifecycle.md` | The states a change moves through, and how versions are superseded. |
 | `questions.md` | How a question is formed, answered, or withdrawn. |
-| `exposure.md` | How approved outputs reach agents, through direct access and through publication into a project's own files. |
-| `rollback.md` | How a published change is undone. |
+| `exposure.md` | How approved outputs reach agents through direct access. |
+| `rollback.md` | How a published change is undone by taking back its approval. |
 
 ---
 
@@ -26,11 +26,11 @@ Archon works in four steps.
 1. **Collect.** Facts are recorded as they were observed, in whatever form they take, such as what happened in an agent session, what a code base contains, what agents load, or what the user says.
 2. **Link.** Factual associations between records are derived from the records themselves, such as two sessions that changed the same file.
 3. **Analyze.** Records and their associations are searched across sessions and projects for the more abstract connections that require judgment, such as patterns, contradictions, and outdated knowledge. Each finding that holds up against its evidence and is worth proposing becomes a proposed change to memory, practices, or skills, and revisions or retirements of published outputs are proposed when what they rest on changes.
-4. **Approve.** A proposed change is published to agents only after it is approved.
+4. **Approve.** A proposed change is published to agents when it is approved, and only then.
 
 The steps are numbered in the order that knowledge moves through them.
 
-Approved outputs reach agents through [exposure](exposure.md), which is not a step. The steps run when events start them, while exposure is a live surface that agents use as they work. Agents can work with approved outputs in Archon directly, and an approved output can be published into a project's own files so that the project uses it without Archon. Exposure builds on Approve and never alters it.
+Approved outputs reach agents through [exposure](exposure.md), which is not a step. The steps run when events start them, while exposure is a live surface that agents use as they work. Agents work with approved outputs in Archon directly. Exposure builds on Approve and never alters it.
 
 ## How the steps relate
 
@@ -47,9 +47,9 @@ The steps do not run as a fixed sequence. Different events start different steps
 | **[Collect](collect.md)** | Facts from any source, such as sessions, code bases, existing knowledge, and the user | Records, and updates to record metadata | Interprets a fact, or changes a record's fact |
 | **[Link](link.md)** | Records | Associations | Changes a record, draws a conclusion that goes beyond the facts, or forms a question |
 | **[Analyze](analyze.md)** | Records, associations, its own earlier work | Claims, inferences, findings, questions, proposals | Publishes, or changes an output |
-| **[Approve](approve.md)** | Proposals | Decisions on changes, and publications | Publishes anything that is not approved |
+| **[Approve](approve.md)** | Proposals | Decisions on changes | Publishes anything that is not approved |
 
-Knowledge moves through the steps in one direction. Records become associations, records and associations become findings, findings that hold up and are worth proposing become proposals, and approved and published changes become versions of outputs. Those versions are recorded as facts, which closes the loop without any step depending on one above it. Each arrow in that chain is traceable in reverse, from any version back to the evidence behind it (principle 2).
+Knowledge moves through the steps in one direction. Records become associations, records and associations become findings, findings that hold up and are worth proposing become proposals, and approved changes become versions of outputs. Those versions are recorded as facts, which closes the loop without any step depending on one above it. Each arrow in that chain is traceable in reverse, from any version back to the evidence behind it (principle 2).
 
 ## Properties that hold across the process
 
@@ -58,7 +58,7 @@ The following properties hold for every step and every run.
 - **Only Collect writes records.** Every other step reads records and never writes one, and never changes their metadata. A step that needs a record checked again asks Collect to do it, and Collect does not need to know which step asked.
 - **Records are never edited.** A record's fact stays as it was captured, and every change to Archon's understanding happens in metadata or internal knowledge (principle 3).
 - **Everything is traceable.** Every finding, change, and version links back to its evidence (principle 2).
-- **Nothing reaches agents without approval.** No output is published and nothing is written into a project unless the change is approved (principle 12).
+- **Nothing reaches agents without approval.** No output is published unless the change is approved (principle 12).
 - **History is kept.** Every revision to metadata, internal knowledge, or outputs is recorded, including what was superseded, rejected, deferred, or withdrawn (principle 10).
 - **Work is incremental.** New knowledge is added to what is already known, and earlier work is not repeated because new knowledge arrived (principle 11).
 - **Steps depend only downward.** Each step depends only on what the steps beneath it expose, never alters what they hold, and can be modified, rebuilt, or replaced without changes to them (principle 19).

@@ -9,7 +9,7 @@ This roadmap lists the layers of Archon's design in the order they are meant to 
 | 001 | `001-abstract/` | Abstract | Proposed |
 | 002 | `002-concepts/` | Concepts | Proposed |
 | 003 | `003-process/` | Process | Proposed |
-| 004 | `004-requirements/` | Requirements | Planned |
+| 004 | `004-requirements/` | Requirements | Draft |
 | 005 | `005-design/` | Technical design | Planned |
 | 006 | `006-delivery/` | Delivery | Planned |
 
@@ -45,13 +45,13 @@ This layer turns layers 001 through 003 into requirements that must hold true ho
 - Reversibility of every published change.
 - The possibility of measuring a proposal's effect, so that layer 005 cannot rule it out.
 
-Each requirement carries acceptance criteria. Terms such as "relevant," "promising," and "supported" receive thresholds here, or they are explicitly recorded as open.
+Each requirement carries acceptance criteria. Terms such as "relevant," "promising," and "supported" receive their meaning here.
 
 The purpose of this layer is to give the technical design a fixed target to be verified against.
 
 ## 005, Technical design
 
-This layer converts the requirements in layer 004 into technical requirements and defines the actual flow and design of the system. It covers Archon's components, their boundaries, where they run, and how they connect. It decides what starts Link and Analyze and how often each one runs, how facts are captured from each agent platform, where the record and the derived knowledge are stored, how associations are represented, how agents access approved outputs directly and how direct access matches their work to applied scopes, and how outputs are published into project files in a form that every supported agent can load. It also designs the measurement of a proposal's effect, including the replay-based measurement that principle 16 sets as a core goal and the extraction and output metrics drawn from `000-raw/storage.md`. The temporal knowledge graph and vector search described in `000-raw/storage.md` are evaluated here as options alongside alternatives.
+This layer converts the requirements in layer 004 into technical requirements and defines the actual flow and design of the system. It covers Archon's components, their boundaries, where they run, and how they connect. It decides what starts Link and Analyze and how often each one runs, how facts are captured from each agent platform, where the record and the derived knowledge are stored, how associations are represented, and how agents access approved outputs directly and how direct access matches their work to applied scopes. It also designs the measurement of a proposal's effect, including the replay-based measurement that principle 16 sets as a core goal and the extraction and output metrics drawn from `000-raw/storage.md`. The temporal knowledge graph and vector search described in `000-raw/storage.md` are evaluated here as options alongside alternatives.
 
 The purpose of this layer is to choose a structure that meets the requirements in layer 004 while keeping the steps separate.
 

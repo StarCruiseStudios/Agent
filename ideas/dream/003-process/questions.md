@@ -11,4 +11,6 @@
 | **Answered** | The user answered. Collect records the answer as user input, and it joins the evidence. |
 | **Withdrawn** | Later evidence settled the question before the user answered it. Analyze withdraws it and records the evidence that settled it. |
 
+Any number of questions can be open at once. Open questions are put to the user in order of how many findings wait on each one, with the most first.
+
 Answered and withdrawn questions stay in the history (principle 10). An answer reaches Analyze only as evidence that Collect records, so Analyze does not need to know how the answer was given.
