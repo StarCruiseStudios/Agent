@@ -30,11 +30,11 @@ Archon works in four steps.
 
 The steps are numbered in the order that knowledge moves through them.
 
-Approved outputs reach agents through [exposure](exposure.md), which is not a step. The steps run when events start them, while exposure is a live surface that agents use as they work. Agents work with approved outputs in Archon directly. Exposure builds on Approve and never alters it.
+Approved outputs reach agents through [exposure](exposure.md), which is not a step. The steps run when events start them, while exposure is a live surface that agents use as they work. Agents work with approved outputs in Archon directly. Exposure builds on Approve, reads the tags of work from Collect and Analyze, and never alters any of them.
 
 ## How the steps relate
 
-The four steps are the parts that principle 19 describes. Each step builds only on the steps beneath it: Link builds on Collect, Analyze builds on Link and Collect, and Approve builds on Analyze. A step reads what the steps beneath it expose and never alters it, and it keeps what it captures as its own knowledge. A step beneath another never depends on the step above it, so Collect works the same way whether Link exists or not, and Link can be rebuilt without any change to Collect.
+The four steps are the parts that principle 19 describes. Each step builds only on the steps beneath it: Link builds on Collect, Analyze builds on Link and Collect, and Approve builds on Analyze and Collect. A step reads what the steps beneath it expose and never alters it, and it keeps what it captures as its own knowledge. A step beneath another never depends on the step above it, so Collect works the same way whether Link exists or not, and Link can be rebuilt without any change to Collect.
 
 What a step exposes is everything it holds that may be relevant above it, described by what it is. Collect exposes records as facts, without shaping them for how Link relates them. Link exposes associations as relationships between records, without shaping them for what Analyze will look for.
 

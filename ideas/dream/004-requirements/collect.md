@@ -10,7 +10,7 @@ These requirements apply to [Collect](../003-process/collect.md), the step that 
 **COL-1. Collecting the same fact again adds no second record.** Layer 003 sets this as a property of Collect.
 
 - Collecting a finished session a second time leaves the set of records unchanged.
-- Collecting a session that has grown since it was last collected adds records only for the new events.
+- Collecting a session that has grown since it was last collected adds only the new events.
 - Collecting existing knowledge or a code base fact that has not changed adds no record (COL-5).
 
 **COL-2. A record's fact never changes after it is written.** This follows from principle 3.

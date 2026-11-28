@@ -10,7 +10,7 @@ This roadmap lists the layers of Archon's design in the order they are meant to 
 | 002 | `002-concepts/` | Concepts | Proposed |
 | 003 | `003-process/` | Process | Proposed |
 | 004 | `004-requirements/` | Requirements | Draft |
-| 005 | `005-design/` | Technical design | Planned |
+| 005 | `005-design/` | Technical design | Draft |
 | 006 | `006-delivery/` | Delivery | Planned |
 
 Layers 001 through 003 are conceptual. They describe what Archon is, the principles it operates by, its goals and non-goals, the kinds of things it works with, and the properties its process keeps. They contain no implementation details, schemas, contracts, or technology choices. Layer 004 adds requirements without deciding how they are met. Layer 005 is the first layer that makes technical decisions.

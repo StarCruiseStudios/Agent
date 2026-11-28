@@ -3,7 +3,7 @@
 **Layer:** 003, Process
 **Status:** Proposed
 
-Exposure is how published outputs reach agents. It is not a step. The steps build knowledge when something starts them, and exposure is available to agents whenever they work. It builds on Approve and never alters what Approve holds (principle 19).
+Exposure is how published outputs reach agents. It is not a step. The steps build knowledge when something starts them, and exposure is available to agents whenever they work. It builds on Approve, reads the tags of work from Collect and Analyze to tell which work an applied scope covers, and never alters what any of them holds (principle 19).
 
 ---
 

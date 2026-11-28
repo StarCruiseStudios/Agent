@@ -11,8 +11,8 @@ These requirements keep the steps separate, as principle 19 and the [process ove
 
 - Replacing Link requires no change to Collect or to any record.
 - Replacing Analyze requires no change to Link, Collect, or any association or record.
-- Replacing Approve requires no change to Analyze or to what Analyze holds.
-- Replacing exposure requires no change to Approve or to what Approve holds.
+- Replacing Approve requires no change to Analyze, Collect, or what either one holds.
+- Replacing exposure requires no change to Approve, Analyze, Collect, or what any of them holds.
 - Discarding everything a step above Collect holds and rebuilding it requires only what the steps beneath it expose.
 
 **SEP-2. A step never alters what a step beneath it holds.** This follows from principle 19, and layer 003 adds that only Collect writes records.

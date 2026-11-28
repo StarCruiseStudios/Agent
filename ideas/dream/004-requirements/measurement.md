@@ -9,7 +9,7 @@ These requirements keep it possible to measure a proposal's effect, which princi
 
 **MEA-1. Every session record lets Archon recover how the session started and how it ended.** This follows from principle 16, which gives replaying comparable past tasks as an example of measurement.
 
-- For each recorded session that ran in a code base that Collect records, the code base state the session started from can be recovered from the record.
+- For each recorded session that ran in a code base that Collect records, and that started after Archon was set up to record its platform, the code base state the session started from can be recovered from the record.
 - For each recorded session that a user's request started, the record identifies that request.
 - For each recorded session whose platform kept an outcome, the record identifies that outcome.
 
